@@ -1,6 +1,10 @@
 <?php
 
-class ContaPremium extends Conta
+namespace SON\Conta\Types;
+
+use SON\Conta\ContaAbstract;
+
+class ContaPremiumType extends ContaAbstract
 {
 
     public function __construct()
@@ -10,9 +14,7 @@ class ContaPremium extends Conta
 
     protected function calculoDeposito($valor)
     {
-        $valor_normal = parent::calculoDeposito($valor);
-
-        return $valor_normal += 20;
+        return $valor += 20;
     }
 
 }

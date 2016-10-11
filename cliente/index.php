@@ -3,17 +3,30 @@
 require_once('Cliente.php');
 
 $clientes = [
-    new Cliente('Bruno','123456789123','20','rua das camelias, 123'),
-    new Cliente('Pedro','123456789123','21','rua das camelias, 124'),
-    new Cliente('Eduardo','123456789123','22','rua das camelias, 125'),
-    new Cliente('Junior','123456789123','23','rua das camelias, 126'),
-    new Cliente('Joao','123456789123','24','rua das camelias, 127'),
-    new Cliente('Joana','123456789123','25','rua das camelias, 128'),
-    new Cliente('Gustavo','123456789123','26','rua das camelias, 129'),
-    new Cliente('Eduarda','123456789123','27','rua das camelias, 130'),
-    new Cliente('Natalia','123456789123','28','rua das camelias, 131'),
-    new Cliente('Ana','123456789123','29','rua das camelias, 132'),
+    new Cliente(),
+    new Cliente(),
+    new Cliente(),
+    new Cliente(),
+    new Cliente(),
+
+    new Cliente(),
+    new Cliente(),
+    new Cliente(),
+    new Cliente(),
+    new Cliente(),
 ];
+
+foreach ($clientes as $k => $cliente) {
+    if($k < 5) {
+        $clientes[$k] = $cliente->clienteFisica("Bruno $k", "03686644061", "2$k");
+    } else {
+        $clientes[$k] = $cliente->clienteJuridica("Empresa $k", "045161170001$k");
+    }
+
+    $clientes[$k]->setEndereco("Rua $k");
+    $clientes[$k]->setImportancia("$k");
+    $clientes[$k]->setEnderecoCobranca("Rua de cobrança $k");
+}
 
 if($_GET['ordem'] == 'asc') {
     ksort($clientes);
@@ -45,7 +58,7 @@ if($_GET['ordem'] == 'desc') {
 
 <div class="container">
     <div>
-        <h4>Ordenação</h4>
+        <h4>Ordenacao</h4>
         <a class="btn btn-primary" href="index.php?ordem=asc"><span class="glyphicon glyphicon-arrow-up"></span> Ascendente</a>
         <a class="btn btn-primary" href="index.php?ordem=desc"><span class="glyphicon glyphicon-arrow-down"></span> Descendente</a>
     </div>
@@ -56,7 +69,22 @@ if($_GET['ordem'] == 'desc') {
     <ul class="nav nav-tabs" role="tablist">
         <?php
         foreach($clientes as $k => $cliente) {
-            echo("<li role=\"presentation\"><a href=\"#$k\" aria-controls=\"home\" role=\"tab\" data-toggle=\"tab\">".$k." - ".$cliente->getNome()."</a></li>");
+
+            if(is_a($cliente, 'PessoaFisica')) {
+                $nome = $cliente->getNome();
+                $cpf = $cliente->getCpf();
+                $cnpj = '-';
+                $idade = $cliente->getIdade();
+                $tipo = 'Pessoa Física';
+            } else if(is_a($cliente, 'PessoaJuridica')) {
+                $nome = $cliente->getRazaoSocial();
+                $cpf = '-';
+                $cnpj = $cliente->getCnpj();
+                $idade = '-';
+                $tipo = 'Pessoa Jurídica';
+            }
+
+            echo("<li role=\"presentation\"><a href=\"#$k\" aria-controls=\"home\" role=\"tab\" data-toggle=\"tab\">".$k." - ".$nome."</a></li>");
         }
         ?>
     </ul>
@@ -65,12 +93,31 @@ if($_GET['ordem'] == 'desc') {
     <div class="tab-content">
         <?php
         foreach($clientes as $k => $cliente) {
+
+            if(is_a($cliente, 'PessoaFisica')) {
+                $nome = $cliente->getNome();
+                $cpf = $cliente->getCpf();
+                $cnpj = '';
+                $idade = $cliente->getIdade();
+                $tipo = 'Pessoa Física';
+            } else if(is_a($cliente, 'PessoaJuridica')) {
+                $nome = $cliente->getRazaoSocial();
+                $cpf = '-';
+                $cnpj = $cliente->getCnpj();
+                $idade = '-';
+                $tipo = 'Pessoa Jurídica';
+            }
+
             echo("
                         <div role=\"tabpanel\" class=\"tab-pane\" id=\"$k\">
-                            Nome: ".$cliente->getNome()."<br />
-                            Cpf: ".$cliente->getCpf()."<br />
-                            Idade: ".$cliente->getIdade()."<br />
-                            Endereço: ".$cliente->getEndereco()."
+                            Nome: ".$nome."<br />
+                            Cpf: ".$cpf."<br />
+                            Cnpj: ".$cnpj."<br />
+                            Idade: ".$idade."<br />
+                            Endereço: ".$cliente->getEndereco()."<br />
+                            Endereço cobrança: ".$cliente->getEnderecoCobranca()."<br />
+                            Importância: ".$cliente->getImportancia()."<br />
+                            Tipo: ".$tipo."
                         </div>
                     ");
         }
